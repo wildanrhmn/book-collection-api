@@ -10,22 +10,42 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Author{
-  id String @id @default(cuid())
-  firstName String
-  lastName String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Book Book[]
+model Author {
+  id          String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  books       Book[]
 }
 
-model Book{
-  id String @id @default(cuid())
-  title String
-  isFiction Boolean
-  datePublished DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  author Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId String
+model Book {
+  id             String   @id @default(cuid())
+  title          String
+  isFiction      Boolean
+  datePublished  DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  author         Author   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId       String
+  bookReaders    BookReader[]
+}
+
+model Reader {
+  id          String      @id @default(cuid())
+  firstName   String
+  lastName    String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  bookmarks   BookReader[]
+}
+
+model BookReader {
+  id          String      @id @default(cuid())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  book        Book        @relation(fields: [bookId], references: [id])
+  bookId      String
+  reader      Reader      @relation(fields: [readerId], references: [id])
+  readerId    String
 }

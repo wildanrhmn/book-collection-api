@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 
 import { authorRouter } from './modules/author/author.router'
 import { bookRouter } from './modules/book/book.router'
+import { readerRouter } from './modules/reader/reader.router'
 
 dotenv.config()
 
@@ -23,6 +24,7 @@ app.use(cookieParser())
 
 app.use('/author', authorRouter)
 app.use('/book', bookRouter)
+app.use('/reader', readerRouter)
 app.listen(PORT, ()=>{
     console.log(`listening on port ${PORT}`)
 })

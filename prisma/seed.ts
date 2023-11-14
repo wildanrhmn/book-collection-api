@@ -5,6 +5,11 @@ type Author = {
     lastName: string
 }
 
+type Reader = {
+    firstName: string,
+    lastName: string
+}
+
 type Book = {
     title: string,
     isFiction: boolean,
@@ -41,8 +46,18 @@ async function seed(){
             })
         })
     )
-}
 
+    await Promise.all(
+        getReader().map((reader) => {
+            return db.reader.create({
+                data:{
+                    firstName: reader.firstName,
+                    lastName: reader.lastName
+                }
+            })
+        })
+    )
+}
 seed();
 
 function getAuthors(): Array<Author> {
@@ -80,5 +95,22 @@ function getBooks(): Array<Book> {
             datePublished: new Date()
         }
 
+    ]
+}
+
+function getReader(): Array<Reader> {
+    return [
+        {
+            firstName: "Wildan",
+            lastName: "Nur Rahman"
+        },
+        {
+            firstName: "Robert",
+            lastName: "Downey"
+        },
+        {
+            firstName: "Steve",
+            lastName: "Rogers"
+        }
     ]
 }

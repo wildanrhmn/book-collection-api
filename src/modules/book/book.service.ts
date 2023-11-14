@@ -1,7 +1,7 @@
 import { db } from "../../utils/db.server";
 import { Author } from "../author/author.service";
 
-type BookRead = {
+export type BookRead = {
     id: string,
     title: string,
     datePublished: Date,
@@ -9,7 +9,7 @@ type BookRead = {
     author: Author
 }
 
-type BookWrite = {
+export type BookWrite = {
     title: string,
     datePublished: Date,
     authorId: string,
