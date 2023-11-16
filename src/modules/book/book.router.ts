@@ -1,82 +1,80 @@
-import express from "express";
-import type { Request, Response } from "express";
-import { body, validationResult } from "express-validator";
+import { Controller, Get, Path, Route, Body, Post, Put, Delete } from 'tsoa';
 
-import * as BookService from "./book.service";
+import { BookService } from "./book.service";
+import { BookWrite } from "./book";
 
-export const bookRouter = express.Router();
-
-// get all books
-bookRouter.get("/", async (req: Request, res: Response) => {
-    try {
-        const books = await BookService.listBooks();
-        if (!books) return res.status(404).send("Books not found");
-        return res.status(200).json(books)
-    } catch (err: any) {
-        return res.status(500).send(err.message);
-    }
-})
-
-// get book by id
-bookRouter.get("/:id", async (req: Request, res: Response) => {
-    try {
-        const book = await BookService.getBook(req.params.id);
-        if (!book) return res.status(404).send("Book not found");
-        return res.status(200).json(book)
-    } catch (err: any) {
-        return res.status(500).send(err.message);
-    }
-})
-
-// create new book
-bookRouter.post("/",
-    body("title").isString(),
-    body("authorId").isString(),
-    body("datePublished").isDate().toDate(),
-    body("isFiction").isBoolean(),
-    async (req: Request, res: Response) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+@Route("book")
+export class BookController extends Controller {
+    @Get("/")
+     async getBooks(): Promise<any> {
+        try {
+            const books = await new BookService().listBooks();
+            return books;
+        } catch (err: any) {
+            throw new Error(err.message);
         }
+    }
+
+    @Get("{id}")
+    async getBook(@Path() id: string): Promise<any> {
+        try {
+            const book = await new BookService().getBook(id);
+            return book;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    @Post("/")
+    async createBook(@Body() book: BookWrite){
+        try {
+            const createBook = await new BookService().createBook(book);
+            return createBook;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    @Put("{id}")
+    async updateBook(@Path() id: string, @Body() book: BookWrite){
         try{
-            const createBook = await BookService.createBook(req.body);
-            return res.status(201).json(createBook);
+            const updateBook = await new BookService().updateBook(id, book);
+            return updateBook;
         }catch (err: any) {
-            return res.status(500).send(err.message);
+            throw new Error(err.message);
         }
     }
-)
 
-// update book
-bookRouter.put("/:id",
-    body("title").isString(),
-    body("authorId").isString(),
-    body("datePublished").isDate().toDate(),
-    body("isFiction").isBoolean(),
-    async (req: Request, res: Response) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-        const id: string = req.params.id;
+    @Delete("{id}")
+    async deleteBook(@Path() id: string){
         try{
-            const updateAuthor = await BookService.updateBook(id, req.body);
-            return res.status(200).json(updateAuthor);
+            const deleteBook = await new BookService().deleteBook(id)
+            return deleteBook
         }catch (err: any) {
-            return res.status(500).send(err.message);
+            throw new Error(err.message);
         }
     }
-)
 
-//delete book
-bookRouter.delete("/:id", async (req: Request, res: Response) => {
-    try{
-        await BookService.deleteBook(req.params.id);
-        return res.status(200).json({
-            message: "Book deleted successfully"
-        });
-    }catch(err: any){
-        return res.status(500).send(err.message);
+    @Post("bookmark/{bookId}")
+    async userBookmarkBook (@Body() body: any, @Path() bookId: string){
+        const { userId } = body;
+        try {
+            const userBookmarkBook = await new BookService().userBookmarkBook(userId, bookId);
+            return userBookmarkBook;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
     }
-})
+
+    @Delete("bookmark/{bookId}")
+    async userUnBookmarkBook (@Body() body: any, @Path() bookId: string){
+        const { userId } = body;
+        try {
+            const userUnBookmarkBook = await new BookService().userUnBookmarkBook(userId, bookId);
+            return userUnBookmarkBook;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+}
+

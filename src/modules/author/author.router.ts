@@ -1,77 +1,59 @@
-import express from "express";
-import type { Request, Response } from "express";
-import { body, validationResult } from "express-validator";
+import { Controller, Get, Path, Route, Body, Post, Put, Delete } from 'tsoa';
+import { AuthorService } from './author.service';
 
-import * as AuthorService from "./author.service";
+import { Author } from './author';
 
-export const authorRouter = express.Router();
+@Route("author")
+export class AuthorController extends Controller {
+   
+    @Get("/")
+     async getAuthors(): Promise<any> {
+         try {
+             const authors = await new AuthorService().listAuthors();
+             return authors;
+         } catch (err: any) {
+             throw new Error(err.message);
+         }
+     }
 
-// get all authors
-authorRouter.get("/", async (req: Request, res: Response) => {
-    try {
-        const authors = await AuthorService.listAuthors();
-        if (!authors) return res.status(404).send("Authors not found");
-        return res.status(200).json(authors)
-    } catch (err: any) {
-        return res.status(500).send(err.message);
-    }
-});
-
-// get author by id
-authorRouter.get("/:id", async (req: Request, res: Response) => {
-    try {
-        const author = await AuthorService.getAuthor(req.params.id);
-        if (!author) return res.status(404).send("Author not found");
-        return res.status(200).json(author)
-    } catch (err: any) {
-        return res.status(500).send(err.message);
-    }
-});
-
-// create a new author
-authorRouter.post("/",
-    body("firstName").isString(),
-    body("lastName").isString(),
-    async (req: Request, res: Response) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
+     @Get("{id}")
+    async getAuthor(@Path() id: string): Promise<any> {
         try {
-            const newAuthor = await AuthorService.createAuthor(req.body);
-            return res.status(201).json(newAuthor);
+            const author = await new AuthorService().getAuthor(id);
+            return author;
         } catch (err: any) {
-            return res.status(500).send(err.message);
+            throw new Error(err.message);
         }
-    })
-
-// update an author
-authorRouter.put("/:id",
-    body("firstName").isString(),
-    body("lastName").isString(),
-    async (req: Request, res: Response) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-        try {
-            const updatedAuthor = await AuthorService.updateAuthor(req.params.id, req.body);
-            if (!updatedAuthor) return res.status(404).send("Author not found");
-            return res.status(200).json(updatedAuthor);
-        } catch (err: any) {
-            return res.status(500).send(err.message);
-        }
-    })
-
-// delete an author
-authorRouter.delete("/:id", async (req: Request, res: Response) => {
-    try {
-        const deletedAuthor = await AuthorService.deleteAuthor(req.params.id);
-        if (!deletedAuthor) return res.status(404).send("Author not found");
-        return res.status(200).json({
-            message: "Author deleted successfully"
-        });
-    } catch (err: any) {
-        return res.status(500).send(err.message);
     }
-})
+
+    @Post("/")
+    async createAuthor(@Body() author: Author){
+        try {
+            const newAuthor = await new AuthorService().createAuthor(author);
+            return newAuthor;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    @Put("{id}")
+    async updateAuthor(@Path() id: string, @Body() author: Author){
+        try{
+            const updateAuthor = await new AuthorService().updateAuthor(id, author);
+            return updateAuthor;
+        }catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    @Delete("{id}")
+    async deleteAuthor(@Path() id: string){
+        try{
+            const deleteAuthor = await new AuthorService().deleteAuthor(id)
+            return deleteAuthor
+        }catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+}
+

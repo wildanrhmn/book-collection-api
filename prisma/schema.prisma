@@ -44,8 +44,8 @@ model BookReader {
   id          String      @id @default(cuid())
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  book        Book        @relation(fields: [bookId], references: [id])
+  book        Book        @relation(fields: [bookId], references: [id], onDelete: Cascade)
   bookId      String
-  reader      Reader      @relation(fields: [readerId], references: [id])
+  reader      Reader      @relation(fields: [readerId], references: [id], onDelete: Cascade)
   readerId    String
 }

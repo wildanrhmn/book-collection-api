@@ -1,11 +1,9 @@
 import * as dotenv from 'dotenv'
-import express from 'express'
+import express, { Response as ExResponse, Request as ExRequest } from "express";
+import swaggerUi from "swagger-ui-express";
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-
-import { authorRouter } from './modules/author/author.router'
-import { bookRouter } from './modules/book/book.router'
-import { readerRouter } from './modules/reader/reader.router'
+import { RegisterRoutes } from '../build/routes';
 
 dotenv.config()
 
@@ -22,9 +20,14 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
 
-app.use('/author', authorRouter)
-app.use('/book', bookRouter)
-app.use('/reader', readerRouter)
+RegisterRoutes(app)
+
+app.use("/docs", swaggerUi.serve, async (_req: ExRequest, res: ExResponse) => {
+    return res.send(
+      swaggerUi.generateHTML(await import("../build/swagger.json"))
+    );
+  });
+
 app.listen(PORT, ()=>{
     console.log(`listening on port ${PORT}`)
 })

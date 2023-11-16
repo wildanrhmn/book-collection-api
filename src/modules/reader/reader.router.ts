@@ -1,32 +1,17 @@
-import express from 'express';
-import * as ReaderService from './reader.service';
-import { body, validationResult } from 'express-validator';
-import type { Request, Response } from 'express';
+import { Controller, Get, Route} from 'tsoa';
+import { ReaderService } from './reader.service';
+import { Reader } from "./reader"
 
-export const readerRouter = express.Router();
+@Route("reader")
+export class ReaderController extends Controller {
 
-// get all readers
-readerRouter.get("/", async (req: Request, res: Response) => {
-    try{
-        const readers = await ReaderService.listReaders();
-        return res.status(200).json(readers);
-    }catch(err: any){
-        return res.status(500).send(err.message);
+ @Get("/")
+  async getReaders(): Promise<Reader[]> {
+      try{
+          const readers = await new ReaderService().listReaders();
+          return readers;
+      }catch (err: any) {
+        throw new Error(err.message);
     }
-})
-
-//bookmark a book
-readerRouter.post("/bookmark",
-body("readerId").isString(),
-body("bookId").isString(),
-async (req: Request, res: Response) => {
-    const { readerId, bookId } = req.body
-    try{
-        await ReaderService.readerBookmarkBook(readerId, bookId);
-        return res.status(200).json({
-            message: "Book bookmarked successfully"
-        });
-    }catch(err: any){
-        return res.status(500).send(err.message);
-    }
-})
+  }
+}
