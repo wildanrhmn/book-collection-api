@@ -1,8 +1,9 @@
-import { Controller, Get, Path, Route, Body, Post, Put, Delete } from 'tsoa';
+import { Controller, Get, Path, Route, Body, Post, Put, Delete, Tags } from 'tsoa';
 import { AuthorService } from './author.service';
 
 import { Author } from './author';
 
+@Tags("Author")
 @Route("author")
 export class AuthorController extends Controller {
    
@@ -30,6 +31,7 @@ export class AuthorController extends Controller {
     async createAuthor(@Body() author: Author){
         try {
             const newAuthor = await new AuthorService().createAuthor(author);
+            this.setStatus(201);
             return newAuthor;
         } catch (err: any) {
             throw new Error(err.message);

@@ -20,7 +20,7 @@ export class AuthorService{
         });
     }
 
-    async createAuthor (author: Omit<Author, "id">): Promise<Author>{
+    async createAuthor (author: Pick<Author, "firstName" | "lastName">): Promise<Author>{
         const { firstName, lastName } = author;
         return db.author.create({
             data: {
@@ -35,7 +35,7 @@ export class AuthorService{
         });
     }
 
-    async updateAuthor (id: string, author: Omit<Author, "id">): Promise<Author | null>{
+    async updateAuthor (id: string, author: Pick<Author, "firstName" | "lastName">): Promise<Author | null>{
         const { firstName, lastName } = author;
         return db.author.update({
             where: {

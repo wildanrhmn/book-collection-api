@@ -1,8 +1,9 @@
-import { Controller, Get, Path, Route, Body, Post, Put, Delete } from 'tsoa';
+import { Controller, Get, Path, Route, Body, Post, Put, Delete, Tags } from 'tsoa';
 
 import { BookService } from "./book.service";
 import { BookWrite } from "./book";
 
+@Tags("Book")
 @Route("book")
 export class BookController extends Controller {
     @Get("/")

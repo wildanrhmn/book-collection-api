@@ -1,7 +1,8 @@
-import { Controller, Get, Route} from 'tsoa';
+import { Controller, Get, Route, Tags} from 'tsoa';
 import { ReaderService } from './reader.service';
 import { Reader } from "./reader"
 
+@Tags("Reader")
 @Route("reader")
 export class ReaderController extends Controller {
 
