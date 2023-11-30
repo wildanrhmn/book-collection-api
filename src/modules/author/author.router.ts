@@ -13,7 +13,7 @@ export class AuthorController extends Controller {
              const authors = await new AuthorService().listAuthors();
              return authors;
          } catch (err: any) {
-             throw new Error(err.message);
+             return err
          }
      }
 
